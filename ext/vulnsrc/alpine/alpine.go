@@ -32,10 +32,12 @@ import (
 	"github.com/coreos/clair/pkg/gitutil"
 )
 
+// This Alpine vulnerability database affects origin packages, which has
+// `origin` field of itself.
+// This will be overwritten by os.GetEnv("VULNSRC_ALPINE") if present
+var secdbGitURL = "https://github.com/alpinelinux/alpine-secdb"
+
 const (
-	// This Alpine vulnerability database affects origin packages, which has
-	// `origin` field of itself.
-	secdbGitURL  = "https://github.com/alpinelinux/alpine-secdb"
 	updaterFlag  = "alpine-secdbUpdater"
 	nvdURLPrefix = "https://cve.mitre.org/cgi-bin/cvename.cgi?name="
 	// affected type indicates if the affected feature hint is for binary or
@@ -44,6 +46,11 @@ const (
 )
 
 func init() {
+	// optional overrides
+	if os.Getenv("VULNSRC_ALPINE_SECDB_GIT") != "" {
+		secdbGitURL = os.Getenv("VULNSRC_ALPINE_SECDB_GIT")
+	}
+
 	vulnsrc.RegisterUpdater("alpine", &updater{})
 }
 

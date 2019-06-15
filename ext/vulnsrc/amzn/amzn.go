@@ -22,6 +22,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"os"
 	"regexp"
 	"strings"
 
@@ -35,18 +36,23 @@ import (
 	"github.com/coreos/clair/pkg/httputil"
 )
 
-const (
-	amazonLinux1UpdaterFlag   = "amazonLinux1Updater"
+var (
+	// This will be overwritten by os.GetEnv("VULNSRC_AMZN1_MIRROR") if present
 	amazonLinux1MirrorListURI = "http://repo.us-west-2.amazonaws.com/2018.03/updates/x86_64/mirror.list"
-	amazonLinux1Name          = "Amazon Linux 2018.03"
-	amazonLinux1Namespace     = "amzn:2018.03"
-	amazonLinux1LinkFormat    = "https://alas.aws.amazon.com/%s.html"
-
-	amazonLinux2UpdaterFlag   = "amazonLinux2Updater"
+	// This will be overwritten by os.GetEnv("VULNSRC_AMZN2_MIRROR") if present
 	amazonLinux2MirrorListURI = "https://cdn.amazonlinux.com/2/core/latest/x86_64/mirror.list"
-	amazonLinux2Name          = "Amazon Linux 2"
-	amazonLinux2Namespace     = "amzn:2"
-	amazonLinux2LinkFormat    = "https://alas.aws.amazon.com/AL2/%s.html"
+)
+
+const (
+	amazonLinux1UpdaterFlag = "amazonLinux1Updater"
+	amazonLinux1Name        = "Amazon Linux 2018.03"
+	amazonLinux1Namespace   = "amzn:2018.03"
+	amazonLinux1LinkFormat  = "https://alas.aws.amazon.com/%s.html"
+
+	amazonLinux2UpdaterFlag = "amazonLinux2Updater"
+	amazonLinux2Name        = "Amazon Linux 2"
+	amazonLinux2Namespace   = "amzn:2"
+	amazonLinux2LinkFormat  = "https://alas.aws.amazon.com/AL2/%s.html"
 )
 
 type updater struct {
@@ -58,6 +64,13 @@ type updater struct {
 }
 
 func init() {
+	// optional overrides
+	if os.Getenv("VULNSRC_AMZN1_MIRROR") != "" {
+		amazonLinux1MirrorListURI = os.Getenv("VULNSRC_AMZN1_MIRROR")
+	}
+	if os.Getenv("VULNSRC_AMZN2_MIRROR") != "" {
+		amazonLinux2MirrorListURI = os.Getenv("VULNSRC_AMZN2_MIRROR")
+	}
 	// Register updater for Amazon Linux 2018.03.
 	amazonLinux1Updater := updater{
 		UpdaterFlag:   amazonLinux1UpdaterFlag,

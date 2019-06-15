@@ -15,6 +15,22 @@ Clair is officially packaged and released as a container.
 [quay.io/coreos/clair-jwt]: https://quay.io/repository/coreos/clair-jwt
 [quay.io/coreos/clair-git]: https://quay.io/repository/coreos/clair-git
 
+## Environment variables
+
+Clair depends on a number of external resources for getting up-to-date information about vulnerabilities. To cater for those who would like to use their own mirrors, a number of optional environment variables are offered:
+
+| Environment Variable | Default |
+|----------------------|---------|
+| VULNSRC_ALPINE_SECDB_GIT | https://github.com/alpinelinux/alpine-secdb |
+| VULNSRC_AMZN1_MIRROR | http://repo.us-west-2.amazonaws.com/2018.03/updates/x86_64/mirror.list |
+| VULNSRC_AMZN2_MIRROR | https://cdn.amazonlinux.com/2/core/latest/x86_64/mirror.list |
+| VULNSRC_DEBIAN_CVEPREFIX | https://security-tracker.debian.org/tracker |
+| VULNSRC_DEBIAN_JSON | https://security-tracker.debian.org/tracker/data/json |
+| VULNSRC_ORACLE_OVAL | https://linux.oracle.com/oval/ |
+| VULNSRC_RHEL_OVAL | https://www.redhat.com/security/data/oval/ |
+| VULNSRC_SUSE_OVAL | https://www.redhat.com/security/data/oval/ |
+| VULNSRC_UBUNTU_TRACKER | https://git.launchpad.net/ubuntu-cve-tracker |
+
 ## Common Architecture
 
 ### Registry Integration

@@ -21,6 +21,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -35,12 +36,14 @@ import (
 	"github.com/coreos/clair/pkg/httputil"
 )
 
+// This will be overwritten by os.GetEnv("VULNSRC_RHEL_OVAL") if present
+var ovalURI = "https://www.redhat.com/security/data/oval/"
+
 const (
 	// Before this RHSA, it deals only with RHEL <= 4.
 	firstRHEL5RHSA      = 20070044
 	firstConsideredRHEL = 5
 
-	ovalURI        = "https://www.redhat.com/security/data/oval/"
 	rhsaFilePrefix = "com.redhat.rhsa-"
 	updaterFlag    = "rhelUpdater"
 	affectedType   = database.BinaryPackage
@@ -95,6 +98,11 @@ type criterion struct {
 type updater struct{}
 
 func init() {
+	// optional overrides
+	if os.Getenv("VULNSRC_RHEL_OVAL") != "" {
+		ovalURI = os.Getenv("VULNSRC_RHEL_OVAL")
+	}
+
 	vulnsrc.RegisterUpdater("rhel", &updater{})
 }
 

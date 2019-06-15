@@ -35,8 +35,10 @@ import (
 	"github.com/coreos/clair/pkg/gitutil"
 )
 
+// This will be overwritten by os.GetEnv("VULNSRC_UBUNTU_TRACKER") if present
+var trackerURI = "https://git.launchpad.net/ubuntu-cve-tracker"
+
 const (
-	trackerURI   = "https://git.launchpad.net/ubuntu-cve-tracker"
 	updaterFlag  = "ubuntuUpdater"
 	cveURL       = "http://people.ubuntu.com/~ubuntu-security/cve/%s"
 	affectedType = database.SourcePackage
@@ -81,6 +83,11 @@ type updater struct {
 }
 
 func init() {
+	// optional overrides
+	if os.Getenv("VULNSRC_UBUNTU_TRACKER") != "" {
+		trackerURI = os.Getenv("VULNSRC_UBUNTU_TRACKER")
+	}
+
 	vulnsrc.RegisterUpdater("ubuntu", &updater{})
 }
 

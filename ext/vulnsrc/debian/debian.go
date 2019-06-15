@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -34,9 +35,14 @@ import (
 	"github.com/coreos/clair/pkg/httputil"
 )
 
-const (
-	url          = "https://security-tracker.debian.org/tracker/data/json"
+var (
+	// This will be overwritten by os.GetEnv("VULNSRC_DEBIAN_JSON") if present
+	url = "https://security-tracker.debian.org/tracker/data/json"
+	// This will be overwritten by os.GetEnv("VULNSRC_DEBIAN_CVEPREFIX") if present
 	cveURLPrefix = "https://security-tracker.debian.org/tracker"
+)
+
+const (
 	updaterFlag  = "debianUpdater"
 	affectedType = database.SourcePackage
 )
@@ -57,6 +63,14 @@ type jsonRel struct {
 type updater struct{}
 
 func init() {
+	// optional overrides
+	if os.Getenv("VULNSRC_DEBIAN_CVEPREFIX") != "" {
+		cveURLPrefix = os.Getenv("VULNSRC_DEBIAN_CVEPREFIX")
+	}
+	if os.Getenv("VULNSRC_DEBIAN_JSON") != "" {
+		url = os.Getenv("VULNSRC_DEBIAN_JSON")
+	}
+
 	vulnsrc.RegisterUpdater("debian", &updater{})
 }
 

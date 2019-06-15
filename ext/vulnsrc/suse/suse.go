@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -36,9 +37,10 @@ import (
 	"github.com/coreos/clair/pkg/commonerr"
 )
 
-const (
-	ovalURI = "http://ftp.suse.com/pub/projects/security/oval/"
+// This will be overwritten by os.GetEnv("VULNSRC_SUSE_OVAL") if present
+var ovalURI = "https://www.redhat.com/security/data/oval/"
 
+const (
 	// "Thu, 30 Nov 2017 03:07:57 GMT
 	timeFormatLastModified = "Mon, 2 Jan 2006 15:04:05 MST"
 
@@ -118,6 +120,11 @@ func newUpdater(f flavor) updater {
 }
 
 func init() {
+	// optional overrides
+	if os.Getenv("VULNSRC_SUSE_OVAL") != "" {
+		ovalURI = os.Getenv("VULNSRC_SUSE_OVAL")
+	}
+
 	suseUpdater := newUpdater(SUSE)
 	openSUSEUpdater := newUpdater(OpenSUSE)
 	vulnsrc.RegisterUpdater("suse", &suseUpdater)

@@ -20,6 +20,7 @@ import (
 	"bufio"
 	"encoding/xml"
 	"io"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -36,9 +37,11 @@ import (
 	"github.com/coreos/clair/pkg/httputil"
 )
 
+// This will be overwritten by os.GetEnv("VULNSRC_ORACLE_OVAL") if present
+var ovalURI = "https://linux.oracle.com/oval/"
+
 const (
 	firstOracle5ELSA = 20070057
-	ovalURI          = "https://linux.oracle.com/oval/"
 	elsaFilePrefix   = "com.oracle.elsa-"
 	updaterFlag      = "oracleUpdater"
 	affectedType     = database.BinaryPackage
@@ -91,6 +94,11 @@ type criterion struct {
 type updater struct{}
 
 func init() {
+	// optional overrides
+	if os.Getenv("VULNSRC_ORACLE_OVAL") != "" {
+		ovalURI = os.Getenv("VULNSRC_ORACLE_OVAL")
+	}
+
 	vulnsrc.RegisterUpdater("oracle", &updater{})
 }
 
